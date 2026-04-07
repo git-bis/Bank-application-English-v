@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bank-app-deployment
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        # 🔹 Frontend
+      - name: frontend
+        image: rohitgitte/app-frontend:v1
+        ports:
+          - containerPort: 3000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+
+      # 🔹 Backend
+      - name: backend
+        image: rohitgitte/app-backend:v1
+        ports:
+          - containerPort: 3001
+
+        # ✅ FIX: ENV VARIABLES ADDED
+        env:
+          - name: APP_PORT
+            value: "3001"
+          - name: JWT_SECRET
+            value: "jwt_secret"
+          - name: DB_USER
+            value: "postgres"
+          - name: DB_PASS
+            value: "123456"
+          - name: DB_HOST
+            value: "db"
+          - name: DB_PORT
+            value: "5432"
+
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
